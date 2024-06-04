@@ -75,8 +75,7 @@ def do_istft(spec: torch.Tensor, n_fft: int = 1024) -> torch.Tensor:
     NOTE: you may need to use torch.view_as_complex.
     """
     if len(spec.shape) == 4:
-        s = do_istft(spec.unsqueeze(0), n_fft)
-        return s.squeeze(0)
+        return do_istft(spec.unsqueeze(0), n_fft).squeeze(0)
     return torch.istft(torch.view_as_complex(spec).squeeze(1), window=torch.ones(n_fft), length=n_fft if spec.shape[-2] == 1 else None, n_fft=n_fft, win_length=n_fft, onesided=False, hop_length=n_fft//4).unsqueeze(1)
 
 

@@ -37,12 +37,11 @@ def self_check_fft_stft():
 
     Include all plots in your PDF
     """
-    SR, TT = 16000, 3*60
+    SR, TT = 16000, 3
     first_sine = gu.create_single_sin_wave(1000, TT, SR).unsqueeze(0)
     second_sine = gu.create_single_sin_wave(3000, TT, SR).unsqueeze(0)
     combined_sine = first_sine + second_sine
     batch = torch.stack([first_sine, second_sine, combined_sine], dim=0)
-    print(batch.shape)
     gu.plot_fft(batch)
 
 

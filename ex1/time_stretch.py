@@ -31,7 +31,8 @@ def naive_time_stretch_temporal(wav: torch.Tensor, factor: float):
 
     Do NOT include saved audio in your submission.
     """
-    return interpolate(wav, scale_factor=factor, mode='linear')
+    return interpolate(wav.unsqueeze(0), scale_factor=factor,
+                       mode='linear').squeeze(0)
 
 
 def naive_time_stretch_stft(wav: torch.Tensor, factor: float):
@@ -49,7 +50,7 @@ def naive_time_stretch_stft(wav: torch.Tensor, factor: float):
 
     Do NOT include saved audio in your submission.
     """
-    stft = gu.do_stft(wav)
+    stft = gu.do_stft(wav.unsqueeze(1))
     stretched_stft = interpolate(stft.squeeze(1), scale_factor=(
         factor, 1), mode='bilinear').unsqueeze(1)
     stretched_wav = gu.do_istft(stretched_stft)
@@ -57,15 +58,13 @@ def naive_time_stretch_stft(wav: torch.Tensor, factor: float):
 
 
 if __name__ == "__main__":
-    wav, rs = gu.load_wav('./audio_files/Basta_16k.wav')
-    wav = wav.unsqueeze(0)
-    ta.save('./audio_files/Basta_16k_stretched_0.8.wav',
-            naive_time_stretch_temporal(wav, 0.8)[0], rs)
-    ta.save('./audio_files/Basta_16k_stretched_1.2.wav',
-            naive_time_stretch_temporal(wav, 1.2)[0], rs)
-
-    wav = wav.permute(1, 0, 2)
-    ta.save('./audio_files/Basta_16k_stretched_stft_0.8.wav',
+    base = Path(__file__).parent
+    wav, rs = gu.load_wav(f'{base}/audio_files/Basta_16k.wav')
+    ta.save(f'{base}/audio_files/Basta_16k_stretched_0.8.wav',
+            naive_time_stretch_temporal(wav, 0.8), rs)
+    ta.save(f'{base}/audio_files/Basta_16k_stretched_1.2.wav',
+            naive_time_stretch_temporal(wav, 1.2), rs)
+    ta.save(f'{base}/audio_files/Basta_16k_stretched_stft_0.8.wav',
             naive_time_stretch_stft(wav, 0.8)[0], rs)
-    ta.save('./audio_files/Basta_16k_stretched_stft_1.2.wav',
+    ta.save(f'{base}/audio_files/Basta_16k_stretched_stft_1.2.wav',
             naive_time_stretch_stft(wav, 1.2)[0], rs)
